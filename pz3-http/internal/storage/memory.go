@@ -32,6 +32,14 @@ func (s *MemoryStore) Create(title string) *Task {
 	return t
 }
 
+func (s *MemoryStore) Delete(id int64) *Task {
+	s.blockFlag.Lock()
+	defer s.blockFlag.Unlock()
+	t := s.tasks[id]
+	delete(s.tasks, id)
+	return t
+}
+
 func (s *MemoryStore) Get(id int64) (*Task, error) {
 	s.blockFlag.RLock()
 	defer s.blockFlag.RUnlock()

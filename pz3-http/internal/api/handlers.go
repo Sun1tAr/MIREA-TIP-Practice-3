@@ -120,3 +120,22 @@ func (h *Handlers) PatchTask(w http.ResponseWriter, r *http.Request) {
 	t.Done = true
 	JSON(w, http.StatusOK, t)
 }
+
+// DELETE /tasks/{id} удаляет задачу
+func (h *Handlers) DeleteTask(w http.ResponseWriter, r *http.Request) {
+	// Ожидаем путь вида /tasks/123
+	parts := strings.Split(strings.Trim(r.URL.Path, "/"), "/")
+	if len(parts) != 2 {
+		NotFound(w, "invalid path")
+		return
+	}
+	id, err := strconv.ParseInt(parts[1], 10, 64)
+	if err != nil {
+		BadRequest(w, "invalid id")
+		return
+	}
+
+	t := h.Store.Delete(id)
+
+	JSON(w, http.StatusOK, t)
+}

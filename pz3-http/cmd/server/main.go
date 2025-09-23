@@ -26,6 +26,9 @@ func main() {
 	// Обновление статуса
 	mux.HandleFunc("PATCH /tasks/", handlers.PatchTask)
 
+	// Удаление задачи
+	mux.HandleFunc("DELETE /tasks/", handlers.DeleteTask)
+
 	// Подключаем логирование
 	handler := api.Logging(mux)
 
