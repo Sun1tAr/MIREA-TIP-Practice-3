@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"example.com/pz3-http/internal/api"
+	"example.com/pz3-http/internal/env"
 	"example.com/pz3-http/internal/storage"
 )
 
@@ -32,7 +33,7 @@ func main() {
 	// Подключаем логирование
 	handler := api.Logging(mux)
 
-	addr := ":8080"
+	addr := ":" + env.GetPort()
 	log.Println("listening on", addr)
 	if err := http.ListenAndServe(addr, handler); err != nil {
 		log.Fatal(err)

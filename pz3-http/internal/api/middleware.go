@@ -3,6 +3,7 @@ package api
 import (
 	"log"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -23,4 +24,14 @@ func Logging(next http.Handler) http.Handler {
 		next.ServeHTTP(rec, r)
 		log.Printf("%s %s %d %v", r.Method, r.URL.Path, rec.status, time.Since(start))
 	})
+}
+
+func CORSable(r *http.Request) bool {
+	created := r.Header.Get("Access-Control-Allow-Origin") != ""
+	validate := !strings.Contains(r.Header.Get("Access-Control-Allow-Origin"), "*")
+	return created && validate
+}
+
+func TitleValidation(title string) bool {
+	return len(title) >= 3 && len(title) < 140
 }

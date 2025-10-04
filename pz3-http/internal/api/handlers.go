@@ -20,6 +20,12 @@ func NewHandlers(store *storage.MemoryStore) *Handlers {
 
 // GET /tasks
 func (h *Handlers) ListTasks(w http.ResponseWriter, r *http.Request) {
+
+	if !CORSable(r) {
+		UnCORSable(w, "this request is not allowed")
+		return
+	}
+
 	tasks := h.Store.List()
 
 	// Поддержка простых фильтров через query: ?q=text
@@ -43,6 +49,12 @@ type createTaskRequest struct {
 
 // POST /tasks
 func (h *Handlers) CreateTask(w http.ResponseWriter, r *http.Request) {
+
+	if !CORSable(r) {
+		UnCORSable(w, "this request is not allowed")
+		return
+	}
+
 	if r.Header.Get("Content-Type") != "" && !strings.Contains(r.Header.Get("Content-Type"), "application/json") {
 		BadRequest(w, "Content-Type must be application/json")
 		return
@@ -59,8 +71,8 @@ func (h *Handlers) CreateTask(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if (len(req.Title) < 1) || (len(req.Title) > 140) {
-		BadRequest(w, "The title must contain at least 1 character, but no more than 140 characters")
+	if !TitleValidation(req.Title) {
+		UnprocessableEntity(w, "The title must contain at least 3 character, but no more than 140 characters")
 		return
 	}
 
@@ -70,6 +82,12 @@ func (h *Handlers) CreateTask(w http.ResponseWriter, r *http.Request) {
 
 // GET /tasks/{id} (простой path-парсер без стороннего роутера)
 func (h *Handlers) GetTask(w http.ResponseWriter, r *http.Request) {
+
+	if !CORSable(r) {
+		UnCORSable(w, "this request is not allowed")
+		return
+	}
+
 	// Ожидаем путь вида /tasks/123
 	parts := strings.Split(strings.Trim(r.URL.Path, "/"), "/")
 	if len(parts) != 2 {
